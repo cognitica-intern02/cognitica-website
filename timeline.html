@@ -1,268 +1,198 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Cognitica — Robust Vertical Timeline</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cognitica Timeline</title>
+
 <style>
-  :root{
-    --cog-blue:#0f56ff; --cog-teal:#00c2cc; --cog-purple:#9b6bff;
-    --muted:#6b7a90; --card-bg:rgba(255,255,255,0.98);
-    --maxw:1100px;
-  }
-  html,body{height:100%;margin:0;padding:0;overflow-x:hidden;background:linear-gradient(180deg,#f6f8fb,#eef6ff);font-family:Inter, "Segoe UI", system-ui, -apple-system;}
-  .wrap{max-width:var(--maxw);margin:40px auto;padding:20px;box-sizing:border-box;}
+	body {
+		margin: 0;
+		padding: 0;
+		font-family: Inter, sans-serif;
+		background: linear-gradient(180deg,#f6f8fb,#eef6ff);
+		overflow-x: hidden;
+	}
 
-  /* container grid: two columns (left content, center line, right content) */
-  .timeline{
-    display:grid;
-    grid-template-columns: 1fr 80px 1fr;
-    gap:20px;
-    position:relative;
-    align-items:start;
-    padding:20px 12px;
-  }
+	.container {
+		width: 100%;
+		max-width: 900px;
+		margin: 50px auto;
+		position: relative;
+		padding: 20px;
+	}
 
-  /* center line column */
-  .line-col{
-    position:relative;
-    width:100%;
-    display:flex;
-    justify-content:center;
-  }
-  .track{
-    width:8px;border-radius:6px;background:#eaf2ff; position:relative;
-    box-shadow:0 6px 22px rgba(15,86,255,0.05);
-    height:100%;
-    align-self:stretch;
-  }
-  .track .progress{
-    position:absolute; left:0; top:0; width:100%; height:0%;
-    background:linear-gradient(180deg,var(--cog-blue),var(--cog-teal),var(--cog-purple));
-    border-radius:6px; transition:height .18s linear;
-  }
+	h2 {
+		text-align: center;
+		color: #0f172a;
+		margin-bottom: 50px;
+	}
 
-  /* each row is an item spanning whole grid */
-  .row{ display:grid; grid-template-columns:1fr 80px 1fr; align-items:center; margin:28px 0; position:relative; }
+	.timeline-line {
+		position: absolute;
+		left: 50%;
+		top: 0;
+		transform: translateX(-50%);
+		width: 6px;
+		height: 100%;
+		background: #dbe7ff;
+		border-radius: 4px;
+	}
 
-  /* left and right content cells */
-  .cell{ padding:6px 12px; }
-  .cell .card{ background:var(--card-bg); padding:18px; border-radius:12px; box-shadow:0 18px 40px rgba(10,20,40,0.06); max-width:calc(100% - 12px); }
-  .card .title{ color:var(--cog-blue); font-weight:700; margin-bottom:8px; }
-  .card .desc{ color:var(--muted); margin:0; line-height:1.45; font-size:14px; }
+	.marker {
+		position: relative;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 18px;
+		height: 18px;
+		background: white;
+		border-radius: 50%;
+		border: 3px solid #fff;
+		box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+		margin: 120px 0;
+		z-index: 5;
+	}
 
-  /* marker sits inside center column aligned with row using absolute positioning relative to row */
-  .marker{
-    width:18px;height:18px;border-radius:50%; background:#fff; border:3px solid rgba(255,255,255,0.95);
-    box-shadow:0 8px 22px rgba(12,40,120,0.08); display:flex;align-items:center;justify-content:center; margin:0 auto;
-  }
-  .marker .dot{ width:10px;height:10px;border-radius:50%; background:linear-gradient(90deg,var(--cog-blue),var(--cog-teal)); transform:scale(.95); transition:transform .18s ease; }
+	.marker .dot {
+		width: 10px;
+		height: 10px;
+		background: linear-gradient(90deg,#0f56ff,#00c2cc);
+		border-radius: 50%;
+		margin: auto;
+		margin-top: 1px;
+	}
 
-  /* when row is in view */
-  .row.in-view .dot{ transform:scale(1.25); }
-  .row .cell.in-view .card{ transform:translateY(0); opacity:1; }
+	.item {
+		width: 45%;
+		position: relative;
+		margin-bottom: 80px;
+	}
 
-  /* initial card animation state */
-  .card{ transform:translateY(18px); opacity:0; transition:all .52s cubic-bezier(.2,.9,.25,1); }
+	.left { float: left; clear: both; text-align: right; }
+	.right { float: right; clear: both; text-align: left; }
 
-  /* alternate placement: show card on left or right by controlling which cell has content */
-  .row.left .left-cell .card{ margin-left:auto; } /* visually nearer to center */
-  .row.right .right-cell .card{ margin-right:auto; }
+	.card {
+		background: white;
+		padding: 20px;
+		border-radius: 12px;
+		box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+	}
 
-  /* responsive: single column stack */
-  @media (max-width:900px){
-    .timeline, .row{ grid-template-columns: 40px 1fr; }
-    .line-col{ grid-column:1/2; }
-    .track{ position: absolute; left:8px; top:0; bottom:0; height:100%; }
-    .row{ margin:18px 0; }
-    .cell{ padding:8px; }
-    .left-cell, .right-cell{ grid-column:2/3; }
-    .center-cell{ display:none; }
-    .marker{ position:absolute; left:8px; transform:none; margin:0; }
-    .card{ margin-left:28px; }
-  }
+	.title {
+		color: #0f56ff;
+		font-size: 18px;
+		font-weight: 700;
+		margin-bottom: 6px;
+	}
 
-  /* helper */
-  .spacer{ height:16px; }
+	.desc {
+		color: #6b7a90;
+		line-height: 1.45;
+		font-size: 14px;
+	}
+
+	@media(max-width: 800px) {
+		.left, .right {
+			float: none;
+			width: 100%;
+			text-align: left;
+			margin-left: 0;
+		}
+		.timeline-line {
+			left: 25px;
+		}
+		.marker {
+			left: 25px;
+			transform: translateX(0);
+		}
+		.item {
+			margin-left: 60px;
+			width: calc(100% - 60px);
+		}
+	}
 </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <h2 style="margin:0 0 18px;color:#0f1724">How Cognitica Improves Safety — Timeline</h2>
+  
+<div class="container">
+	<h2>How Cognitica Improves Safety — Timeline</h2>
 
-    <div class="timeline" id="timeline">
+	<div class="timeline-line"></div>
 
-      <!-- center vertical track -->
-      <div class="line-col" style="grid-column:2/3; grid-row:1/9999;">
-        <div class="track" id="track"><div class="progress" id="progress"></div></div>
-      </div>
+	<!-- 1 -->
+	<div class="marker"><div class="dot"></div></div>
+	<div class="item left">
+		<div class="card">
+			<div class="title">Getting started is simple</div>
+			<div class="desc">Begin your safety transformation quickly with minimal setup.</div>
+		</div>
+	</div>
 
-      <!-- Row 1 (left) -->
-      <div class="row left" data-index="0">
-        <div class="cell left-cell">
-          <div class="card">
-            <div class="title">Getting started is simple</div>
-            <p class="desc">Begin your safety transformation quickly with minimal setup.</p>
-          </div>
-        </div>
+	<!-- 2 -->
+	<div class="marker"><div class="dot"></div></div>
+	<div class="item right">
+		<div class="card">
+			<div class="title">Prepare Your Company For the Future</div>
+			<div class="desc">Adopt AI-driven safety systems that scale with your operations.</div>
+		</div>
+	</div>
 
-        <div class="cell center-cell" style="text-align:center;">
-          <div class="marker"><div class="dot"></div></div>
-        </div>
+	<!-- 3 -->
+	<div class="marker"><div class="dot"></div></div>
+	<div class="item left">
+		<div class="card">
+			<div class="title">Prevent Accidents Early</div>
+			<div class="desc">Stop incidents before they happen with real-time computer vision.</div>
+		</div>
+	</div>
 
-        <div class="cell right-cell"></div>
-      </div>
+	<!-- 4 -->
+	<div class="marker"><div class="dot"></div></div>
+	<div class="item right">
+		<div class="card">
+			<div class="title">Understand Safety Issues</div>
+			<div class="desc">Identify behavioral and operational risks with clear insights.</div>
+		</div>
+	</div>
 
-      <!-- Row 2 (right) -->
-      <div class="row right" data-index="1">
-        <div class="cell left-cell"></div>
-        <div class="cell center-cell" style="text-align:center;">
-          <div class="marker"><div class="dot"></div></div>
-        </div>
-        <div class="cell right-cell">
-          <div class="card">
-            <div class="title">Prepare Your Company For the Future</div>
-            <p class="desc">Adopt AI-driven safety systems that scale with your operations.</p>
-          </div>
-        </div>
-      </div>
+	<!-- 5 -->
+	<div class="marker"><div class="dot"></div></div>
+	<div class="item left">
+		<div class="card">
+			<div class="title">A Complete View of All Facilities</div>
+			<div class="desc">Monitor every zone from a single unified dashboard.</div>
+		</div>
+	</div>
 
-      <!-- Row 3 (left) -->
-      <div class="row left" data-index="2">
-        <div class="cell left-cell">
-          <div class="card">
-            <div class="title">Prevent Accidents Early</div>
-            <p class="desc">Stop incidents before they happen with real-time computer vision.</p>
-          </div>
-        </div>
-        <div class="cell center-cell" style="text-align:center;">
-          <div class="marker"><div class="dot"></div></div>
-        </div>
-        <div class="cell right-cell"></div>
-      </div>
+	<!-- 6 -->
+	<div class="marker"><div class="dot"></div></div>
+	<div class="item right">
+		<div class="card">
+			<div class="title">Review Near-Miss Cases</div>
+			<div class="desc">Analyze past incidents to build proactive safety strategies.</div>
+		</div>
+	</div>
 
-      <!-- Row 4 (right) -->
-      <div class="row right" data-index="3">
-        <div class="cell left-cell"></div>
-        <div class="cell center-cell" style="text-align:center;">
-          <div class="marker"><div class="dot"></div></div>
-        </div>
-        <div class="cell right-cell">
-          <div class="card">
-            <div class="title">Understand Safety Issues</div>
-            <p class="desc">Identify behavioral and operational risks with clear insights.</p>
-          </div>
-        </div>
-      </div>
+	<!-- 7 -->
+	<div class="marker"><div class="dot"></div></div>
+	<div class="item left">
+		<div class="card">
+			<div class="title">Make Your Machines Intelligent</div>
+			<div class="desc">Let your industrial machines detect humans and prevent errors instantly.</div>
+		</div>
+	</div>
 
-      <!-- Row 5 (left) -->
-      <div class="row left" data-index="4">
-        <div class="cell left-cell">
-          <div class="card">
-            <div class="title">A Complete View of All Facilities</div>
-            <p class="desc">Monitor every zone from a single unified dashboard.</p>
-          </div>
-        </div>
-        <div class="cell center-cell" style="text-align:center;">
-          <div class="marker"><div class="dot"></div></div>
-        </div>
-        <div class="cell right-cell"></div>
-      </div>
+	<!-- 8 -->
+	<div class="marker"><div class="dot"></div></div>
+	<div class="item right">
+		<div class="card">
+			<div class="title">See Your Safety Situation Clearly</div>
+			<div class="desc">Get complete, real-time visibility across your entire operation.</div>
+		</div>
+	</div>
 
-      <!-- Row 6 (right) -->
-      <div class="row right" data-index="5">
-        <div class="cell left-cell"></div>
-        <div class="cell center-cell" style="text-align:center;">
-          <div class="marker"><div class="dot"></div></div>
-        </div>
-        <div class="cell right-cell">
-          <div class="card">
-            <div class="title">Review Near-Miss Cases</div>
-            <p class="desc">Analyze past incidents to build proactive safety strategies.</p>
-          </div>
-        </div>
-      </div>
+</div>
 
-      <!-- Row 7 (left) -->
-      <div class="row left" data-index="6">
-        <div class="cell left-cell">
-          <div class="card">
-            <div class="title">Make Your Machines Intelligent</div>
-            <p class="desc">Let your industrial machines detect humans and prevent errors instantly.</p>
-          </div>
-        </div>
-        <div class="cell center-cell" style="text-align:center;">
-          <div class="marker"><div class="dot"></div></div>
-        </div>
-        <div class="cell right-cell"></div>
-      </div>
-
-      <!-- Row 8 (right) -->
-      <div class="row right" data-index="7">
-        <div class="cell left-cell"></div>
-        <div class="cell center-cell" style="text-align:center;">
-          <div class="marker"><div class="dot"></div></div>
-        </div>
-        <div class="cell right-cell">
-          <div class="card">
-            <div class="title">See Your Safety Situation Clearly</div>
-            <p class="desc">Get complete, real-time visibility across your entire operation.</p>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-<script>
-  // IntersectionObserver to add 'in-view' to rows and cards
-  (function(){
-    const rows = Array.from(document.querySelectorAll('.row'));
-    const progressEl = document.getElementById('progress');
-    const track = document.getElementById('track');
-    const timeline = document.getElementById('timeline');
-
-    const io = new IntersectionObserver((entries)=>{
-      entries.forEach(e=>{
-        const row = e.target;
-        if(e.isIntersecting){
-          row.classList.add('in-view');
-          // mark its inner cell card visible
-          const leftCell = row.querySelector('.left-cell .card');
-          const rightCell = row.querySelector('.right-cell .card');
-          if(leftCell) leftCell.classList.add('in-view');
-          if(rightCell) rightCell.classList.add('in-view');
-        } else {
-          row.classList.remove('in-view');
-        }
-      });
-      updateProgress();
-    }, { root: null, threshold: 0.25 });
-
-    rows.forEach(r=> io.observe(r));
-
-    function updateProgress(){
-      const rect = timeline.getBoundingClientRect();
-      const vh = window.innerHeight || document.documentElement.clientHeight;
-      // compute how far down the page we've scrolled relative to timeline
-      const start = Math.max(0, Math.min(rect.height, vh - rect.top)); // amount visible from top
-      const percent = Math.max(0, Math.min(1, start / rect.height));
-      progressEl.style.height = (percent * 100) + '%';
-    }
-
-    // initial calc + handlers
-    window.addEventListener('scroll', throttle(updateProgress, 20));
-    window.addEventListener('resize', throttle(updateProgress, 50));
-    setTimeout(updateProgress, 120);
-
-    function throttle(fn, wait){
-      let last = 0;
-      return function(...args){
-        const now = Date.now();
-        if(now - last > wait){ last = now; fn.apply(this,args); }
-      }
-    }
-  })();
-</script>
 </body>
 </html>
