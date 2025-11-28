@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Cognitica — Vertical Animated Timeline</title>
+<style>
+  :root{
+    --cog-blue: #0f56ff;
+    --cog-teal: #00c2cc;
+    --cog-purple: #9b6bff;
+    --muted: #6b7a90;
+    --card-bg: rgba(255,255,255,0.98);
+    --track-bg: linear-gradient(180deg, rgba(15,86,255,0.06), rgba(155,107,255,0.03));
+    --maxw: 980px;
+  }
+  html,body{height:100%;margin:0;font-family:Inter, "Segoe UI", system-ui, -apple-system;background: linear-gradient(180deg,#f6f8fb,#eef6ff);}
+  .wrap{max-width:var(--maxw);margin:36px auto;padding:28px;box-sizing:border-box;}
+
+  /* timeline container */
+  .timeline{position:relative;padding:20px 0 60px 0;}
+  /* central vertical track */
+  .track{
+    position:absolute; left:50%; transform:translateX(-50%);
+    width:8px; top:0; bottom:0; border-radius:8px;
+    background: #eaf2ff; box-shadow: 0 8px 30px rgba(15,86,255,0.06);
+    overflow:visible;
+  }
+  /* progress overlay grows from top as user scrolls */
+  .track .progress{
+    position:absolute; left:0; top:0; width:100%; height:0%;
+    background: linear-gradient(180deg, var(--cog-blue), var(--cog-teal), var(--cog-purple));
+    border-radius:8px; transition: height .15s linear;
+    box-shadow:0 8px 30px rgba(15,86,255,0.12);
+  }
+
+  /* each item */
+  .item{
+    position:relative; width:50%; padding:18px 32px; box-sizing:border-box;
+    opacity:0; transform: translateY(24px) scale(.98); transition: all .6s cubic-bezier(.2,.9,.25,1);
+    margin:36px 0;
+  }
+  .item.in-view{opacity:1; transform: translateY(0) scale(1);}
+
+  /* left / right appearance */
+  .item.left{ left:0; text-align:right; }
+  .item.right{ left:50%; text-align:left; }
+
+  /* card */
+  .card{ display:inline-block; max-width:460px; background:var(--card-bg); padding:18px; border-radius:12px;
+         box-shadow:0 18px 48px rgba(10,20,40,0.06); border-left:4px solid rgba(15,86,255,0.06); }
+  .left .card{ margin-right:18px; }
+  .right .card{ margin-left:18px; }
+
+  .title{ color:var(--cog-blue); font-weight:700; font-size:16px; margin:0 0 6px; }
+  .desc{ margin:0; color:var(--muted); font-size:14px; line-height:1.45; }
+
+  /* circular marker on track aligned with item */
+  .marker{
+    position:absolute; width:18px; height:18px; border-radius:50%;
+    left:50%; transform:translateX(-50%); z-index:6;
+    background: #fff; border:3px solid rgba(255,255,255,0.9);
+    box-shadow:0 8px 20px rgba(12,40,120,0.10);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .marker .dot{ width:10px; height:10px; border-radius:50%;
+    background: linear-gradient(90deg,var(--cog-blue),var(--cog-teal)); box-shadow:0 6px 12px rgba(15,86,255,0.18);
+    transition: transform .2s ease; transform:scale(.9);
+  }
+  .item.in-view + .marker .dot, .item.in-view ~ .marker .dot { transform: scale(1.25); }
+
+  /* small line connector from card to track */
+  .connector{
+    position:absolute; top:22px; width:28px; height:2px; background: linear-gradient(90deg,#e2e8ff, #f6f9ff);
+  }
+  .left .connector{ right: calc(50% + 8px); transform-origin:right; }
+  .right .connector{ left: calc(50% + 8px); transform-origin:left; }
+
+  /* responsive stack */
+  @media (max-width:900px){
+    .item, .item.left, .item.right{ width:100%; left:0; text-align:left; padding-left:56px; }
+    .track{ left:20px; transform:none; }
+    .connector{ display:none; }
+    .card{ margin-left:16px; }
+    .marker{ left:20px; transform:none; }
+  }
+
+  /* hover/focus micro-interaction */
+  .card:hover{ transform: translateY(-6px); box-shadow:0 30px 80px rgba(15,86,255,0.07); }
+  .item:focus-within .card{ outline: 3px solid rgba(0,194,204,0.10); border-radius:10px; }
+
+  /* small style for index / step */
+  .step{ display:inline-block; padding:6px 10px; border-radius:999px; background:linear-gradient(90deg,var(--cog-blue),var(--cog-teal)); color:white; font-weight:700; font-size:12px; margin-bottom:8px; }
+</style>
+</head>
+<body>
+  <div class="wrap" id="wrap">
+    <h2 style="margin:0 0 18px;color:#0f1724;font-family:Inter, 'Segoe UI', sans-serif;">How Cognitica Improves Safety — Timeline</h2>
+
+    <div class="timeline" id="timeline">
+      <div class="track" id="track">
+        <div class="progress" id="progress"></div>
+      </div>
+
+      <!-- items: alternate left / right. Each item followed by marker positioned at same vertical location. -->
+      <div class="item left" data-index="0" tabindex="0" id="item-0" style="top:18px;">
+        <div class="card">
+          <div class="step">1</div>
+          <div class="title">Getting started is simple</div>
+          <div class="desc">Begin your safety transformation quickly with minimal setup.</div>
+        </div>
+        <div class="connector"></div>
+      </div>
+      <div class="marker" style="top:86px;"><div class="dot"></div></div>
+
+      <div class="item right" data-index="1" tabindex="0" id="item-1" style="top:150px;">
+        <div class="card">
+          <div class="step">2</div>
+          <div class="title">Prepare Your Company For the Future</div>
+          <div class="desc">Adopt AI-driven safety systems that scale with your operations.</div>
+        </div>
+        <div class="connector"></div>
+      </div>
+      <div class="marker" style="top:218px;"><div class="dot"></div></div>
+
+      <div class="item left" data-index="2" tabindex="0" id="item-2" style="top:280px;">
+        <div class="card">
+          <div class="step">3</div>
+          <div class="title">Prevent Accidents Early</div>
+          <div class="desc">Stop incidents before they happen with real-time computer vision.</div>
+        </div>
+        <div class="connector"></div>
+      </div>
+      <div class="marker" style="top:348px;"><div class="dot"></div></div>
+
+      <div class="item right" data-index="3" tabindex="0" id="item-3" style="top:412px;">
+        <div class="card">
+          <div class="step">4</div>
+          <div class="title">Understand Safety Issues</div>
+          <div class="desc">Identify behavioral & operational risks with clear insights.</div>
+        </div>
+        <div class="connector"></div>
+      </div>
+      <div class="marker" style="top:480px;"><div class="dot"></div></div>
+
+      <div class="item left" data-index="4" tabindex="0" id="item-4" style="top:544px;">
+        <div class="card">
+          <div class="step">5</div>
+          <div class="title">A Complete View of All Facilities</div>
+          <div class="desc">Monitor every zone from a single unified dashboard.</div>
+        </div>
+        <div class="connector"></div>
+      </div>
+      <div class="marker" style="top:612px;"><div class="dot"></div></div>
+
+      <div class="item right" data-index="5" tabindex="0" id="item-5" style="top:676px;">
+        <div class="card">
+          <div class="step">6</div>
+          <div class="title">Review Near-Miss Cases</div>
+          <div class="desc">Analyze past incidents to build proactive safety strategies.</div>
+        </div>
+        <div class="connector"></div>
+      </div>
+      <div class="marker" style="top:744px;"><div class="dot"></div></div>
+
+      <div class="item left" data-index="6" tabindex="0" id="item-6" style="top:808px;">
+        <div class="card">
+          <div class="step">7</div>
+          <div class="title">Make Your Machines Intelligent</div>
+          <div class="desc">Let your industrial machines detect humans and prevent errors instantly.</div>
+        </div>
+        <div class="connector"></div>
+      </div>
+      <div class="marker" style="top:876px;"><div class="dot"></div></div>
+
+      <div class="item right" data-index="7" tabindex="0" id="item-7" style="top:940px;">
+        <div class="card">
+          <div class="step">8</div>
+          <div class="title">See Your Safety Situation Clearly</div>
+          <div class="desc">Get complete, real-time visibility across your entire operation.</div>
+        </div>
+        <div class="connector"></div>
+      </div>
+      <div class="marker" style="top:1008px;"><div class="dot"></div></div>
+
+    </div>
+  </div>
+
+<script>
+  // Vertical scroll-driven timeline JS
+  (function(){
+    const items = Array.from(document.querySelectorAll('.item'));
+    const markers = Array.from(document.querySelectorAll('.marker'));
+    const progress = document.getElementById('progress');
+    const timeline = document.getElementById('timeline');
+    const track = document.getElementById('track');
+
+    // Place marker left/right - markers sit centrally, items alternate left/right visually.
+    // Compute positions from inline style 'top' declared above. (This keeps markup simple.)
+    function positionMarkers(){
+      // markers already have top inline values in this markup. If dynamic layout, compute from items positions:
+      try {
+        items.forEach((it, idx) => {
+          const rect = it.getBoundingClientRect();
+          // set marker top to center of corresponding item in document coordinates
+          const marker = markers[idx];
+          const top = it.offsetTop + (it.offsetHeight/2) - (marker.offsetHeight/2);
+          marker.style.top = top + 'px';
+        });
+      } catch(e){ /* ignore if computed already */ }
+    }
+    // IntersectionObserver to add .in-view when item is in viewport (threshold tuned)
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(ent => {
+        if(ent.isIntersecting){
+          ent.target.classList.add('in-view');
+        } else {
+          ent.target.classList.remove('in-view');
+        }
+      });
+      updateProgress();
+    }, { threshold: 0.25 });
+
+    items.forEach(it => io.observe(it));
+
+    // progress height calculation: % of timeline container seen from top to bottom mapped to progress height
+    function updateProgress(){
+      const wrap = timeline;
+      const rect = wrap.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // compute visible amount from top of wrap to bottom of viewport
+      const visibleTop = Math.max(0, vh - rect.top); // how much of viewport covered from top
+      // compute proportion of timeline scrolled: clamp 0..1
+      const totalHeight = rect.height;
+      const visible = Math.max(0, Math.min(totalHeight, visibleTop));
+      const percent = Math.round((visible/totalHeight) * 100);
+      progress.style.height = percent + '%';
+    }
+
+    // run positioning + initial progress
+    function init(){
+      positionMarkers();
+      updateProgress();
+    }
+
+    window.addEventListener('resize', throttle(() => { positionMarkers(); updateProgress(); }, 80));
+    window.addEventListener('scroll', throttle(updateProgress, 20));
+    // small throttle helper
+    function throttle(fn, wait){
+      let last = 0;
+      return function(...args){
+        const now = Date.now();
+        if(now - last > wait){ last = now; fn.apply(this, args); }
+      }
+    }
+    // initial
+    setTimeout(init, 80);
+  })();
+</script>
+ <script>
+  // --- START: Patch to ensure track covers all items/markers ---
+  (function(){
+    const timeline = document.getElementById('timeline');
+    const track = document.getElementById('track');
+    const items = Array.from(document.querySelectorAll('.item'));
+    const markers = Array.from(document.querySelectorAll('.marker'));
+    const progress = document.getElementById('progress');
+
+    // Compute and set timeline + track height to fully include items and markers
+    function resizeTrackToContent(){
+      // Find the bottom-most element (item or marker)
+      let maxBottom = 0;
+
+      // Ensure items are laid out normally (they are relative) then compute positions
+      items.forEach((it, i) => {
+        const itTop = it.offsetTop;
+        const itBottom = itTop + it.offsetHeight;
+        maxBottom = Math.max(maxBottom, itBottom);
+      });
+
+      // Also consider markers if they are placed outside normal flow
+      markers.forEach(m => {
+        const mTop = parseFloat(m.style.top) || m.offsetTop;
+        const mBottom = mTop + m.offsetHeight;
+        maxBottom = Math.max(maxBottom, mBottom);
+      });
+
+      // Add some padding so the last marker/card has breathing room
+      const padded = Math.ceil(maxBottom + 40);
+
+      // Set heights on both timeline and track so the gradient runs full length
+      timeline.style.height = padded + 'px';
+      track.style.height = padded + 'px';
+    }
+
+    // Position markers centered on their corresponding item (dynamic)
+    function positionMarkers(){
+      markers.forEach((marker, idx) => {
+        const it = items[idx];
+        if(!it) return;
+        const top = it.offsetTop + (it.offsetHeight / 2) - (marker.offsetHeight / 2);
+        // ensure the marker top is a px value
+        marker.style.top = Math.max(8, Math.round(top)) + 'px';
+      });
+    }
+
+    // Progress updater (keeps your existing progress logic but uses computed timeline height)
+    function updateProgress(){
+      const rect = timeline.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const visibleTop = Math.max(0, vh - rect.top); // how much of the container is visible from top
+      const total = rect.height || 1;
+      const percent = Math.max(0, Math.min(1, visibleTop / total));
+      progress.style.height = Math.round(percent * 100) + '%';
+    }
+
+    // Run on load and on resize to keep everything in sync
+    function refreshAll(){
+      resizeTrackToContent();
+      positionMarkers();
+      updateProgress();
+    }
+
+    // Init
+    window.addEventListener('load', refreshAll);
+    window.addEventListener('resize', () => { refreshAll(); });
+    window.addEventListener('scroll', () => { updateProgress(); });
+
+    // small safety initial call
+    setTimeout(refreshAll, 120);
+  })();
+  // --- END patch ---
+</script>
+
+</body>
+</html>
