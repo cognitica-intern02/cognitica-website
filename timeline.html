@@ -4,48 +4,76 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Cognitica — Timeline (Animation-safe)</title>
+
+<!-- Questrial font -->
+<link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet">
+
 <style>
 :root{
-  --c-blue:#0031C9; --c-sky:#4A6BFF; --c-teal:#00C2CC; --c-pink:#FF97C2;
-  --bg:#F6F7FB; --muted:#6b7a90; --maxw:1200px;
+  /* new palette: blue -> teal -> grey -> black */
+  --c-blue:#0b63ff;   /* vivid blue */
+  --c-teal:#00b3b3;   /* teal */
+  --c-grey:#9aa6b2;   /* muted grey */
+  --c-black:#0b0b0b;  /* black */
+  --bg:#F6F7FB;
+  --muted:#586674;
+  --maxw:1200px;
 }
-html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:Inter, "Segoe UI", system-ui;}
-.wrap{max-width:var(--maxw);margin:48px auto;padding:0 18px;box-sizing:border-box;}
-h1{ text-align:center; margin:8px 0 36px; font-size:28px; color:#0f1724; }
+
+/* base */
+html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:Questrial, Inter, "Segoe UI", system-ui, sans-serif;color:var(--c-black);}
+.wrap{max-width:var(--maxw);margin:36px auto;padding:0 18px;box-sizing:border-box;}
+h1{ text-align:center; margin:8px 0 28px; font-size:60px; color:#0f1724; line-height:1.02; }
 
 /* timeline container & track */
-.timeline{ position:relative; padding:20px 0 80px; }
+.timeline{ position:relative; padding:10px 0 60px; }
 .track-wrap{ position:absolute; left:50%; top:0; transform:translateX(-50%); width:14px; height:100%; pointer-events:none; z-index:0; }
-.track{ width:100%; height:100%; background:#eaf2ff; border-radius:10px; position:relative; }
-.track .progress{ position:absolute; left:0; top:0; width:100%; height:0; background:linear-gradient(180deg,var(--c-blue),var(--c-teal),var(--c-pink)); border-radius:8px; transition:height .12s linear; }
+.track{ width:100%; height:100%; background:#eaf2ff; border-radius:10px; position:relative; overflow:hidden; }
+.track .progress{
+  position:absolute; left:0; top:0; width:100%; height:0;
+  /* new gradient: blue -> teal -> grey -> black */
+  background:linear-gradient(180deg,var(--c-blue),var(--c-teal),var(--c-grey),var(--c-black));
+  border-radius:8px; transition:height .12s linear;
+}
 
 /* row grid: left | center | right */
-.row{ display:grid; grid-template-columns: 1fr 100px 1fr; gap:16px; align-items:center; margin:46px 0; position:relative; z-index:2; }
+/* reduced gaps and margins per request */
+.row{ display:grid; grid-template-columns: 1fr 100px 1fr; gap:12px; align-items:center; margin:28px 0; position:relative; z-index:2; }
 .left,.center,.right{ padding:0 8px; box-sizing:border-box; }
 
 /* marker (in center column, fixed position in flow) */
-.marker{ width:26px; height:26px; border-radius:50%; background:#fff; border:3px solid rgba(255,255,255,0.95); box-shadow:0 10px 30px rgba(12,40,120,0.12); display:flex; align-items:center; justify-content:center; margin:auto; position:relative; z-index:4; }
-.marker::after{ content:""; width:12px; height:12px; border-radius:50%; background:linear-gradient(90deg,var(--c-blue),var(--c-pink)); box-shadow:0 6px 18px rgba(15,86,255,0.12); display:block; }
+.marker{ width:26px; height:26px; border-radius:50%; background:#fff; border:3px solid rgba(255,255,255,0.95); box-shadow:0 10px 30px rgba(12,40,120,0.08); display:flex; align-items:center; justify-content:center; margin:auto; position:relative; z-index:4; }
+.marker::after{
+  content:""; width:12px; height:12px; border-radius:50%;
+  /* inner gradient matches new palette (subtle) */
+  background:linear-gradient(90deg,var(--c-blue),var(--c-teal));
+  box-shadow:0 6px 18px rgba(11,99,255,0.12); display:block;
+}
 
 /* cards (only use transform & opacity for animation) */
-.card{ background:#fff; padding:18px; border-radius:12px; box-shadow:0 28px 60px rgba(12,40,120,0.06); max-width:100%; transform:translateY(18px); opacity:0; transition:transform .55s cubic-bezier(.2,.9,.25,1),opacity .45s ease; position:relative; z-index:3; }
+.card{ background:#fff; padding:18px; border-radius:12px; box-shadow:0 28px 60px rgba(12,40,120,0.06); max-width:100%; transform:translateY(12px); opacity:0; transition:transform .55s cubic-bezier(.2,.9,.25,1),opacity .45s ease; position:relative; z-index:3; }
 .card.visible{ transform:translateY(0); opacity:1; }
 
-.left .card{ margin-right:36px; text-align:right; }
-.right .card{ margin-left:36px; text-align:left; }
+/* smaller margins on card edges so alignment lines up nicely */
+.left .card{ margin-right:20px; text-align:right; }
+.right .card{ margin-left:20px; text-align:left; }
 
-.title{ color:var(--c-blue); font-weight:700; font-size:16px; margin-bottom:8px; }
-.desc{ color:var(--muted); font-size:14px; line-height:1.45; margin:0; }
+/* titles and content sizes per your request */
+.title{ color:var(--c-blue); font-weight:700; font-size:20px; margin-bottom:6px; }
+.desc{ color:var(--muted); font-size:20px; line-height:1.45; margin:0; }
 
 /* active marker visual (optional subtle halo) */
-.marker.active{ box-shadow:0 12px 36px rgba(15,86,255,0.2); }
+.marker.active{ box-shadow:0 12px 36px rgba(11,99,255,0.16); }
 
+/* responsiveness */
 @media (max-width:900px){
-  .row{ grid-template-columns: 40px 1fr; }
+  .row{ grid-template-columns: 40px 1fr; gap:10px; }
   .left,.right{ grid-column:2/3; padding-left:10px; }
   .center{ grid-column:1/2; display:flex; justify-content:center; }
   .track-wrap{ left:20px; transform:none; width:10px; }
   .left .card, .right .card{ text-align:left; margin:0; }
+  h1{ font-size:34px; }
+  .title, .desc { font-size:16px; }
 }
 </style>
 </head>
@@ -187,9 +215,9 @@ h1{ text-align:center; margin:8px 0 36px; font-size:28px; color:#0f1724; }
   setTimeout(updateProgress,160);
 })();
 </script>
-<!-- INSERT THIS AT BOTTOM OF timeline.html BEFORE </body> -->
+
+<!-- iframe hint / helper (keeps same helper you had) -->
 <style>
-  /* small overlay to show recommended iframe height */
   #iframe-hint {
     position: fixed;
     right: 18px;
@@ -198,7 +226,7 @@ h1{ text-align:center; margin:8px 0 36px; font-size:28px; color:#0f1724; }
     color: #fff;
     padding: 10px 14px;
     border-radius: 8px;
-    font-family: Inter, system-ui, sans-serif;
+    font-family: Questrial, Inter, system-ui, sans-serif;
     font-size: 13px;
     z-index: 99999;
     box-shadow: 0 6px 20px rgba(0,0,0,0.25);
@@ -217,40 +245,31 @@ h1{ text-align:center; margin:8px 0 36px; font-size:28px; color:#0f1724; }
 <div id="iframe-hint" aria-hidden="false">Calculating iframe height…</div>
 
 <script>
-  // compute and show the exact height you should give your iframe in Wix
   (function(){
     function showHeight(){
-      // measure full document height (includes margins)
       var body = document.body, html = document.documentElement;
       var docHeight = Math.max(
         body.scrollHeight, body.offsetHeight,
         html.clientHeight, html.scrollHeight, html.offsetHeight
       );
-      // add a small safety margin
-      var recommended = Math.ceil(docHeight + 40); // +40 px cushion
+      var recommended = Math.ceil(docHeight + 40);
       var hint = document.getElementById('iframe-hint');
       hint.innerHTML = 'Recommended iframe height: <strong>' + recommended + 'px</strong>' +
                        ' <button id="copyBtn">Copy</button> <button id="shrink">Trim 200px</button>';
-      // Copy button
       document.getElementById('copyBtn').onclick = function(){
         navigator.clipboard?.writeText(recommended + 'px').then(function(){
           alert('Copied: ' + recommended + 'px — paste into your iframe height in Wix');
         }).catch(function(){ alert('Copy failed — select the text manually'); });
       };
-      // shrink button (if you want smaller)
       document.getElementById('shrink').onclick = function(){
         var val = Math.max(800, recommended - 200);
         navigator.clipboard?.writeText(val + 'px');
         alert('Copied trimmed height: ' + val + 'px — paste into your iframe height in Wix');
       };
-      // also write to console for convenience
       console.info('Recommended iframe height (px):', recommended);
     }
-
-    // run after small delay so fonts/images/layout finish
     window.addEventListener('load', function(){
       setTimeout(showHeight, 250);
-      // and update if user resizes
       window.addEventListener('resize', function(){ setTimeout(showHeight,150); });
     });
   })();
