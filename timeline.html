@@ -3,276 +3,279 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Cognitica — Timeline (Animation-safe)</title>
 
-<!-- Questrial font -->
+<title>Cognitica — Safety Improvement Journey</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet">
 
 <style>
 :root{
-  /* new palette: blue -> teal -> grey -> black */
-  --c-blue:#0b63ff;   /* vivid blue */
-  --c-teal:#00b3b3;   /* teal */
-  --c-grey:#9aa6b2;   /* muted grey */
-  --c-black:#0b0b0b;  /* black */
+  --blue:#0A56FF;
+  --teal:#00B7C7;
+  --black:#111217;
   --bg:#F6F7FB;
-  --muted:#586674;
+  --muted:#6b7a90;
   --maxw:1200px;
+
+  --track-w:14px;
+  --center-col:40px;  /* FIXED alignment */
 }
 
-/* base */
-html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:Questrial, Inter, "Segoe UI", system-ui, sans-serif;color:var(--c-black);}
-.wrap{max-width:var(--maxw);margin:36px auto;padding:0 18px;box-sizing:border-box;}
-h1{ text-align:center; margin:8px 0 28px; font-size:60px; color:#0f1724; line-height:1.02; }
+html,body{
+  margin:0;
+  padding:0;
+  background:var(--bg);
+  font-family:'Questrial', sans-serif;
+}
 
-/* timeline container & track */
-.timeline{ position:relative; padding:10px 0 60px; }
-.track-wrap{ position:absolute; left:50%; top:0; transform:translateX(-50%); width:14px; height:100%; pointer-events:none; z-index:0; }
-.track{ width:100%; height:100%; background:#eaf2ff; border-radius:10px; position:relative; overflow:hidden; }
+.wrap{
+  max-width:var(--maxw);
+  margin:40px auto;
+  padding:0 20px;
+  box-sizing:border-box;
+}
+
+h1{
+  text-align:center;
+  font-size:60px;
+  margin:10px 0 40px;
+  color:#0f1724;
+  font-weight:600;
+}
+
+/* Timeline */
+.timeline{
+  position:relative;
+  padding:10px 0 40px;
+}
+
+.track-wrap{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  width:var(--track-w);
+  height:100%;
+  pointer-events:none;
+  z-index:0;
+}
+
+.track{
+  width:100%;
+  height:100%;
+  background:#dfe7f3;
+  border-radius:10px;
+  position:relative;
+}
+
 .track .progress{
-  position:absolute; left:0; top:0; width:100%; height:0;
-  /* new gradient: blue -> teal -> grey -> black */
-  background:linear-gradient(180deg,var(--c-blue),var(--c-teal),var(--c-grey),var(--c-black));
-  border-radius:8px; transition:height .12s linear;
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:0;
+  background:linear-gradient(180deg, var(--blue), var(--teal), var(--black));
+  border-radius:10px;
 }
 
-/* row grid: left | center | right */
-/* reduced gaps and margins per request */
-.row{ display:grid; grid-template-columns: 1fr 100px 1fr; gap:12px; align-items:center; margin:28px 0; position:relative; z-index:2; }
-.left,.center,.right{ padding:0 8px; box-sizing:border-box; }
+/* Row layout */
+.row{
+  display:grid;
+  grid-template-columns: 1fr var(--center-col) 1fr;
+  align-items:center;
+  gap:10px;
+  margin:36px 0; /* tighter spacing */
+  position:relative;
+  z-index:2;
+}
 
-/* marker (in center column, fixed position in flow) */
-.marker{ width:26px; height:26px; border-radius:50%; background:#fff; border:3px solid rgba(255,255,255,0.95); box-shadow:0 10px 30px rgba(12,40,120,0.08); display:flex; align-items:center; justify-content:center; margin:auto; position:relative; z-index:4; }
+.center{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  position:relative;
+}
+
+.marker{
+  width:26px;
+  height:26px;
+  background:#fff;
+  border-radius:50%;
+  border:3px solid #fff;
+  box-shadow:0 8px 20px rgba(0,0,0,0.15);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
 .marker::after{
-  content:""; width:12px; height:12px; border-radius:50%;
-  /* inner gradient matches new palette (subtle) */
-  background:linear-gradient(90deg,var(--c-blue),var(--c-teal));
-  box-shadow:0 6px 18px rgba(11,99,255,0.12); display:block;
+  content:"";
+  width:12px;
+  height:12px;
+  background:linear-gradient(180deg, var(--blue), var(--teal));
+  border-radius:50%;
 }
 
-/* cards (only use transform & opacity for animation) */
-.card{ background:#fff; padding:18px; border-radius:12px; box-shadow:0 28px 60px rgba(12,40,120,0.06); max-width:100%; transform:translateY(12px); opacity:0; transition:transform .55s cubic-bezier(.2,.9,.25,1),opacity .45s ease; position:relative; z-index:3; }
-.card.visible{ transform:translateY(0); opacity:1; }
+/* Cards */
+.card{
+  background:#fff;
+  padding:22px;
+  border-radius:14px;
+  box-shadow:0 18px 40px rgba(0,0,0,0.08);
+  opacity:0;
+  transform:translateY(20px);
+  transition:opacity .5s ease, transform .5s ease;
+}
 
-/* smaller margins on card edges so alignment lines up nicely */
-.left .card{ margin-right:20px; text-align:right; }
-.right .card{ margin-left:20px; text-align:left; }
+.card.visible{
+  opacity:1;
+  transform:translateY(0);
+}
 
-/* titles and content sizes per your request */
-.title{ color:var(--c-blue); font-weight:700; font-size:20px; margin-bottom:6px; }
-.desc{ color:var(--muted); font-size:20px; line-height:1.45; margin:0; }
+.left .card{ text-align:right; margin-right:20px; }
+.right .card{ text-align:left; margin-left:20px; }
 
-/* active marker visual (optional subtle halo) */
-.marker.active{ box-shadow:0 12px 36px rgba(11,99,255,0.16); }
+.title{
+  color:var(--blue);
+  font-size:22px;
+  font-weight:600;
+  margin-bottom:6px;
+}
 
-/* responsiveness */
-@media (max-width:900px){
-  .row{ grid-template-columns: 40px 1fr; gap:10px; }
-  .left,.right{ grid-column:2/3; padding-left:10px; }
-  .center{ grid-column:1/2; display:flex; justify-content:center; }
-  .track-wrap{ left:20px; transform:none; width:10px; }
-  .left .card, .right .card{ text-align:left; margin:0; }
-  h1{ font-size:34px; }
-  .title, .desc { font-size:16px; }
+.desc{
+  font-size:20px;
+  color:var(--muted);
+  line-height:1.4;
+}
+
+/* Mobile */
+@media(max-width:900px){
+  .row{
+    grid-template-columns: 40px 1fr;
+  }
+  .left,.right{
+    grid-column:2/3;
+    text-align:left !important;
+    margin:0;
+  }
+  .center{
+    grid-column:1/2;
+  }
+  .track-wrap{
+    left:20px;
+    transform:none;
+  }
 }
 </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <h1>Cognitica — Safety Improvement Journey</h1>
 
-    <div class="timeline" id="timeline">
-      <div class="track-wrap"><div class="track" id="track"><div id="progress" class="progress"></div></div></div>
+<div class="wrap">
 
-      <!-- ROW 1 -->
-      <div class="row">
-        <div class="left">
-          <div class="card" id="c1"><div class="title">Getting started is simple</div><p class="desc">Begin your safety transformation quickly with minimal setup.</p></div>
-        </div>
-        <div class="center"><div class="marker" data-idx="0"></div></div>
-        <div class="right"></div>
-      </div>
+<h1>Cognitica — Safety Improvement Journey</h1>
 
-      <!-- ROW 2 -->
-      <div class="row">
-        <div class="left"></div>
-        <div class="center"><div class="marker" data-idx="1"></div></div>
-        <div class="right"><div class="card" id="c2"><div class="title">Prepare Your Company For the Future</div><p class="desc">Adopt AI-driven safety systems that scale with your operations.</p></div></div>
-      </div>
+<div class="timeline" id="timeline">
 
-      <!-- ROW 3 -->
-      <div class="row">
-        <div class="left"><div class="card" id="c3"><div class="title">Prevent Accidents Early</div><p class="desc">Stop incidents before they happen with real-time computer vision.</p></div></div>
-        <div class="center"><div class="marker" data-idx="2"></div></div>
-        <div class="right"></div>
-      </div>
-
-      <!-- ROW 4 -->
-      <div class="row">
-        <div class="left"></div>
-        <div class="center"><div class="marker" data-idx="3"></div></div>
-        <div class="right"><div class="card" id="c4"><div class="title">Understand Safety Issues</div><p class="desc">Identify behavioral and operational risks with clear insights.</p></div></div>
-      </div>
-
-      <!-- ROW 5 -->
-      <div class="row">
-        <div class="left"><div class="card" id="c5"><div class="title">A Complete View of All Facilities</div><p class="desc">Monitor every zone from a single unified dashboard.</p></div></div>
-        <div class="center"><div class="marker" data-idx="4"></div></div>
-        <div class="right"></div>
-      </div>
-
-      <!-- ROW 6 -->
-      <div class="row">
-        <div class="left"></div>
-        <div class="center"><div class="marker" data-idx="5"></div></div>
-        <div class="right"><div class="card" id="c6"><div class="title">Review Near-Miss Cases</div><p class="desc">Analyze past incidents to build proactive safety strategies.</p></div></div>
-      </div>
-
-      <!-- ROW 7 -->
-      <div class="row">
-        <div class="left"><div class="card" id="c7"><div class="title">Make Your Machines Intelligent</div><p class="desc">Let your industrial machines detect humans and prevent errors instantly.</p></div></div>
-        <div class="center"><div class="marker" data-idx="6"></div></div>
-        <div class="right"></div>
-      </div>
-
-      <!-- ROW 8 -->
-      <div class="row">
-        <div class="left"></div>
-        <div class="center"><div class="marker" data-idx="7"></div></div>
-        <div class="right"><div class="card" id="c8"><div class="title">See Your Safety Situation Clearly</div><p class="desc">Get complete, real-time visibility across your entire operation.</p></div></div>
-      </div>
-
+  <div class="track-wrap">
+    <div class="track">
+      <div id="progress" class="progress"></div>
     </div>
   </div>
 
-<script>
-// Animation-safe progress: progress goes from top of first marker center to center of last visible marker
-(function(){
-  const timeline = document.getElementById('timeline');
-  const progress = document.getElementById('progress');
-  const markers = Array.from(document.querySelectorAll('.marker'));
-  const cards = Array.from(document.querySelectorAll('.card'));
+  <!-- Row 1 -->
+  <div class="row">
+    <div class="left">
+      <div class="card"><div class="title">Getting started is simple</div><div class="desc">Begin your safety transformation quickly with minimal setup.</div></div>
+    </div>
+    <div class="center"><div class="marker"></div></div>
+    <div class="right"></div>
+  </div>
 
-  // reveal cards when they enter - cards animate using transform & opacity only (no reflow)
-  const cardObserver = new IntersectionObserver((entries)=>{
-    entries.forEach(e => {
-      if(e.isIntersecting) e.target.classList.add('visible');
-    });
-  }, { threshold: 0.25 });
-  cards.forEach(c => cardObserver.observe(c));
+  <!-- Row 2 -->
+  <div class="row">
+    <div class="left"></div>
+    <div class="center"><div class="marker"></div></div>
+    <div class="right">
+      <div class="card"><div class="title">Prepare Your Company For the Future</div><div class="desc">Adopt AI-driven safety systems that scale with your operations.</div></div>
+    </div>
+  </div>
 
-  // observe markers to know which are in viewport to compute progress
-  const markerObserver = new IntersectionObserver((entries) => {
-    // add 'active' class when marker center is visible (~ used for indicator)
-    entries.forEach(en => {
-      const m = en.target;
-      if(en.isIntersecting) m.classList.add('active'); else m.classList.remove('active');
-    });
-  }, { root: null, threshold: 0.5 });
+  <!-- Row 3 -->
+  <div class="row">
+    <div class="left">
+      <div class="card"><div class="title">Prevent Accidents Early</div><div class="desc">Stop incidents before they happen with real-time computer vision.</div></div>
+    </div>
+    <div class="center"><div class="marker"></div></div>
+    <div class="right"></div>
+  </div>
 
-  markers.forEach(m => markerObserver.observe(m));
+  <!-- Row 4 -->
+  <div class="row">
+    <div class="left"></div>
+    <div class="center"><div class="marker"></div></div>
+    <div class="right">
+      <div class="card"><div class="title">Understand Safety Issues</div><div class="desc">Identify behavioral and operational risks with clear insights.</div></div>
+    </div>
+  </div>
 
-  function updateProgress() {
-    if(markers.length === 0) return;
-    // compute page Y for first marker center and last marker center that is above bottom viewport
-    const firstRect = markers[0].getBoundingClientRect();
-    const firstCenterPageY = window.scrollY + firstRect.top + firstRect.height/2;
+  <!-- Row 5 -->
+  <div class="row">
+    <div class="left">
+      <div class="card"><div class="title">A Complete View of All Facilities</div><div class="desc">Monitor every zone from a single unified dashboard.</div></div>
+    </div>
+    <div class="center"><div class="marker"></div></div>
+    <div class="right"></div>
+  </div>
 
-    // determine last marker to include: either last marker whose center is above viewport bottom, or the last marker if scrolled past
-    const viewportBottom = window.scrollY + window.innerHeight;
-    let lastIncluded = markers[0];
-    for(let i=0;i<markers.length;i++){
-      const r = markers[i].getBoundingClientRect();
-      const centerPageY = window.scrollY + r.top + r.height/2;
-      if(centerPageY <= viewportBottom - 20) lastIncluded = markers[i];
-    }
-    const lastRect = lastIncluded.getBoundingClientRect();
-    const lastCenterPageY = window.scrollY + lastRect.top + lastRect.height/2;
+  <!-- Row 6 -->
+  <div class="row">
+    <div class="left"></div>
+    <div class="center"><div class="marker"></div></div>
+    <div class="right">
+      <div class="card"><div class="title">Review Near-Miss Cases</div><div class="desc">Analyze past incidents to build proactive safety strategies.</div></div>
+    </div>
+  </div>
 
-    // compute distance (clamped)
-    const timelineTop = window.scrollY + timeline.getBoundingClientRect().top;
-    const timelineBottom = timelineTop + timeline.scrollHeight;
-    const startY = Math.max(timelineTop, firstCenterPageY);
-    const endY = Math.min(timelineBottom, lastCenterPageY);
-    const totalDist = Math.max(1, timelineBottom - timelineTop);
-    const filled = Math.max(0, Math.min(1, (endY - timelineTop) / totalDist));
+  <!-- Row 7 -->
+  <div class="row">
+    <div class="left">
+      <div class="card"><div class="title">Make Your Machines Intelligent</div><div class="desc">Let your industrial machines detect humans and prevent errors instantly.</div></div>
+    </div>
+    <div class="center"><div class="marker"></div></div>
+    <div class="right"></div>
+  </div>
 
-    progress.style.height = (filled*100) + '%';
-  }
+  <!-- Row 8 -->
+  <div class="row">
+    <div class="left"></div>
+    <div class="center"><div class="marker"></div></div>
+    <div class="right">
+      <div class="card"><div class="title">See Your Safety Situation Clearly</div><div class="desc">Get complete, real-time visibility across your entire operation.</div></div>
+    </div>
+  </div>
 
-  // throttle
-  function throttle(fn, wait){
-    let last=0;
-    return function(...args){
-      const now = Date.now();
-      if(now-last>wait){ last=now; fn.apply(this,args); last=now; }
-    }
-  }
-
-  window.addEventListener('scroll', throttle(updateProgress,12));
-  window.addEventListener('resize', throttle(updateProgress,60));
-  window.addEventListener('load', ()=>{ setTimeout(updateProgress,120); });
-  setTimeout(updateProgress,160);
-})();
-</script>
-
-<!-- iframe hint / helper (keeps same helper you had) -->
-<style>
-  #iframe-hint {
-    position: fixed;
-    right: 18px;
-    bottom: 18px;
-    background: rgba(0,0,0,0.7);
-    color: #fff;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-family: Questrial, Inter, system-ui, sans-serif;
-    font-size: 13px;
-    z-index: 99999;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-  }
-  #iframe-hint button {
-    margin-left:10px;
-    background:transparent;
-    border:1px solid rgba(255,255,255,0.18);
-    color:#fff;
-    padding:6px 8px;
-    border-radius:6px;
-    cursor:pointer;
-  }
-</style>
-
-<div id="iframe-hint" aria-hidden="false">Calculating iframe height…</div>
+</div>
+</div>
 
 <script>
-  (function(){
-    function showHeight(){
-      var body = document.body, html = document.documentElement;
-      var docHeight = Math.max(
-        body.scrollHeight, body.offsetHeight,
-        html.clientHeight, html.scrollHeight, html.offsetHeight
-      );
-      var recommended = Math.ceil(docHeight + 40);
-      var hint = document.getElementById('iframe-hint');
-      hint.innerHTML = 'Recommended iframe height: <strong>' + recommended + 'px</strong>' +
-                       ' <button id="copyBtn">Copy</button> <button id="shrink">Trim 200px</button>';
-      document.getElementById('copyBtn').onclick = function(){
-        navigator.clipboard?.writeText(recommended + 'px').then(function(){
-          alert('Copied: ' + recommended + 'px — paste into your iframe height in Wix');
-        }).catch(function(){ alert('Copy failed — select the text manually'); });
-      };
-      document.getElementById('shrink').onclick = function(){
-        var val = Math.max(800, recommended - 200);
-        navigator.clipboard?.writeText(val + 'px');
-        alert('Copied trimmed height: ' + val + 'px — paste into your iframe height in Wix');
-      };
-      console.info('Recommended iframe height (px):', recommended);
-    }
-    window.addEventListener('load', function(){
-      setTimeout(showHeight, 250);
-      window.addEventListener('resize', function(){ setTimeout(showHeight,150); });
-    });
-  })();
+// Reveal cards
+const cards = document.querySelectorAll('.card');
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+},{ threshold:0.2 });
+
+cards.forEach(c=>observer.observe(c));
+
+// Update track progress
+window.addEventListener("scroll", ()=>{
+  const progress = document.getElementById("progress");
+  const timeline = document.getElementById("timeline");
+  const rect = timeline.getBoundingClientRect();
+  const total = rect.height - window.innerHeight;
+  const scrolled = Math.min(Math.max(-rect.top,0), total);
+  progress.style.height = (scrolled / total * 100) + "%";
+});
 </script>
+
 </body>
 </html>
