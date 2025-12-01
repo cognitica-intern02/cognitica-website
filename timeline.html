@@ -278,4 +278,42 @@ window.addEventListener("scroll", ()=>{
 </script>
 
 </body>
+  <script>
+// Listen to scroll updates sent from Wix parent page
+window.addEventListener("message", function (e) {
+    let data = e.data;
+    try {
+        if (typeof data === "string") data = JSON.parse(data);
+    } catch (_) {
+        return;
+    }
+
+    if (data.type !== "wixScroll") return;
+
+    const { scrollY, innerHeight, iframeTop } = data;
+
+    // Progress bar update based on parent scroll
+    const timeline = document.getElementById("timeline");
+    const progress = document.getElementById("progress");
+
+    const rect = timeline.getBoundingClientRect();
+    const timelineTop = iframeTop + rect.top;
+    const timelineHeight = rect.height;
+    const timelineBottom = timelineTop + timelineHeight;
+
+    const lastVisible = scrollY + innerHeight - 50;
+
+    const filled = Math.max(
+        0,
+        Math.min(
+            1,
+            (lastVisible - timelineTop) / (timelineHeight)
+        )
+    );
+
+    progress.style.height = filled * 100 + "%";
+});
+</script>
+
 </html>
+
