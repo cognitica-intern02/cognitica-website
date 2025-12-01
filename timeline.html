@@ -187,5 +187,73 @@ h1{ text-align:center; margin:8px 0 36px; font-size:28px; color:#0f1724; }
   setTimeout(updateProgress,160);
 })();
 </script>
+<!-- INSERT THIS AT BOTTOM OF timeline.html BEFORE </body> -->
+<style>
+  /* small overlay to show recommended iframe height */
+  #iframe-hint {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 13px;
+    z-index: 99999;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  }
+  #iframe-hint button {
+    margin-left:10px;
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.18);
+    color:#fff;
+    padding:6px 8px;
+    border-radius:6px;
+    cursor:pointer;
+  }
+</style>
+
+<div id="iframe-hint" aria-hidden="false">Calculating iframe height…</div>
+
+<script>
+  // compute and show the exact height you should give your iframe in Wix
+  (function(){
+    function showHeight(){
+      // measure full document height (includes margins)
+      var body = document.body, html = document.documentElement;
+      var docHeight = Math.max(
+        body.scrollHeight, body.offsetHeight,
+        html.clientHeight, html.scrollHeight, html.offsetHeight
+      );
+      // add a small safety margin
+      var recommended = Math.ceil(docHeight + 40); // +40 px cushion
+      var hint = document.getElementById('iframe-hint');
+      hint.innerHTML = 'Recommended iframe height: <strong>' + recommended + 'px</strong>' +
+                       ' <button id="copyBtn">Copy</button> <button id="shrink">Trim 200px</button>';
+      // Copy button
+      document.getElementById('copyBtn').onclick = function(){
+        navigator.clipboard?.writeText(recommended + 'px').then(function(){
+          alert('Copied: ' + recommended + 'px — paste into your iframe height in Wix');
+        }).catch(function(){ alert('Copy failed — select the text manually'); });
+      };
+      // shrink button (if you want smaller)
+      document.getElementById('shrink').onclick = function(){
+        var val = Math.max(800, recommended - 200);
+        navigator.clipboard?.writeText(val + 'px');
+        alert('Copied trimmed height: ' + val + 'px — paste into your iframe height in Wix');
+      };
+      // also write to console for convenience
+      console.info('Recommended iframe height (px):', recommended);
+    }
+
+    // run after small delay so fonts/images/layout finish
+    window.addEventListener('load', function(){
+      setTimeout(showHeight, 250);
+      // and update if user resizes
+      window.addEventListener('resize', function(){ setTimeout(showHeight,150); });
+    });
+  })();
+</script>
 </body>
 </html>
