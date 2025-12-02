@@ -3,317 +3,266 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Safety Improvement Journey — Timeline</title>
 
-<title>Cognitica — Safety Improvement Journey</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet">
+<!-- Inter Medium -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 
 <style>
 :root{
-  --blue:#0A56FF;
-  --teal:#00B7C7;
-  --black:#111217;
-  --bg:#F6F7FB;
-  --muted:#6b7a90;
+  --teal:#00A9B2;
+  --light-gray:#e9eef3;
+  --heading:#3d3d3d;
+  --text:#0b0b0b;
+  --card-radius:14px;
   --maxw:1200px;
-
-  --track-w:14px;
-  --center-col:40px;  /* FIXED alignment */
+  --center-col:48px;
+  --track-w:18px;
 }
 
-html,body{
-  margin:0;
-  padding:0;
-  background:var(--bg);
-  font-family:'Questrial', sans-serif;
-}
+/* reset + background white */
+html,body{height:100%;margin:0;padding:0;background:#ffffff;font-family:"Inter",system-ui,Arial,sans-serif;color:var(--text);}
 
-.wrap{
-  max-width:var(--maxw);
-  margin:40px auto;
-  padding:0 20px;
-  box-sizing:border-box;
-}
+/* container */
+.wrap{max-width:var(--maxw);margin:36px auto;padding:0 20px;box-sizing:border-box;background:#fff;}
 
 h1{
   text-align:center;
-  font-size:60px;
-  margin:10px 0 40px;
-  color:#0f1724;
+  font-size:35px;
+  color:var(--heading);
+  margin:12px 0 28px;
   font-weight:600;
 }
 
-/* Timeline */
-.timeline{
-  position:relative;
-  padding:10px 0 40px;
-}
+/* timeline area */
+.timeline{position:relative;padding:8px 0 60px;background:#fff;}
 
+/* track */
 .track-wrap{
-  position:absolute;
-  left:50%;
-  transform:translateX(-50%);
-  width:var(--track-w);
-  height:100%;
-  pointer-events:none;
-  z-index:0;
+  position:absolute; left:50%; transform:translateX(-50%);
+  width:var(--track-w); top:0; bottom:0; pointer-events:none; z-index:0;
 }
-
 .track{
-  width:100%;
-  height:100%;
-  background:#dfe7f3;
-  border-radius:10px;
-  position:relative;
+  width:100%; height:100%; background:var(--light-gray); border-radius:10px; position:relative;
+  overflow:visible;
 }
-
 .track .progress{
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:0;
-  background:linear-gradient(180deg, var(--blue), var(--teal), var(--black));
-  border-radius:10px;
+  position:absolute; left:0; top:0; width:100%; height:0%;
+  background:linear-gradient(180deg, var(--teal) 0%, #bfeff0 40%, #eef2f6 100%);
+  border-radius:8px;
+  transition:height 0.12s linear;
 }
 
-/* Row layout */
+/* rows */
 .row{
   display:grid;
   grid-template-columns: 1fr var(--center-col) 1fr;
+  gap:8px;
   align-items:center;
-  gap:10px;
-  margin:36px 0; /* tighter spacing */
+  margin:22px 0;            /* reduced spacing */
   position:relative;
   z-index:2;
 }
 
-.center{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  position:relative;
-}
+/* center column */
+.center{display:flex;justify-content:center;align-items:center;}
 
+/* marker */
 .marker{
-  width:26px;
-  height:26px;
-  background:#fff;
-  border-radius:50%;
-  border:3px solid #fff;
-  box-shadow:0 8px 20px rgba(0,0,0,0.15);
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  width:34px; height:34px; border-radius:50%;
+  background:#fff; box-shadow:0 10px 26px rgba(11,20,40,0.07);
+  display:flex;align-items:center;justify-content:center; position:relative;
+  border:1px solid rgba(0,0,0,0.03);
 }
-
 .marker::after{
-  content:"";
-  width:12px;
-  height:12px;
-  background:linear-gradient(180deg, var(--blue), var(--teal));
-  border-radius:50%;
+  content:""; width:12px; height:12px; border-radius:50%;
+  background:linear-gradient(180deg,var(--teal),#7edfdc);
+  display:block;
 }
 
-/* Cards */
+/* card */
 .card{
-  background:#fff;
-  padding:22px;
-  border-radius:14px;
-  box-shadow:0 18px 40px rgba(0,0,0,0.08);
-  opacity:0;
-  transform:translateY(20px);
-  transition:opacity .5s ease, transform .5s ease;
+  background:#fff; padding:18px 22px; border-radius:var(--card-radius);
+  box-shadow:0 18px 50px rgba(11,20,40,0.06);
+  opacity:0; transform:translateY(12px);
+  transition:opacity .48s ease, transform .48s cubic-bezier(.2,.9,.25,1);
+  max-width:100%;
+  text-align:left; /* left aligned content */
 }
+.card.visible{ opacity:1; transform:translateY(0); }
 
-.card.visible{
-  opacity:1;
-  transform:translateY(0);
-}
+/* left / right tweaks */
+.left .card{ margin-right:14px; }
+.right .card{ margin-left:14px; }
 
-.left .card{ text-align:right; margin-right:20px; }
-.right .card{ text-align:left; margin-left:20px; }
+/* title + desc */
+.title{ color:var(--teal); font-size:20px; font-weight:600; margin-bottom:6px; }
+.desc{ font-size:20px; color:var(--text); line-height:1.35; margin:0; }
 
-.title{
-  color:var(--blue);
-  font-size:22px;
-  font-weight:600;
-  margin-bottom:6px;
-}
-
-.desc{
-  font-size:20px;
-  color:var(--muted);
-  line-height:1.4;
-}
-
-/* Mobile */
-@media(max-width:900px){
-  .row{
-    grid-template-columns: 40px 1fr;
-  }
-  .left,.right{
-    grid-column:2/3;
-    text-align:left !important;
-    margin:0;
-  }
-  .center{
-    grid-column:1/2;
-  }
-  .track-wrap{
-    left:20px;
-    transform:none;
-  }
+/* responsive */
+@media (max-width:900px){
+  .row{ grid-template-columns: 40px 1fr; gap:10px; }
+  .center{ grid-column:1/2; justify-content:flex-start; }
+  .left,.right{ grid-column:2/3; padding:0; margin:0; }
+  .track-wrap{ left:20px; transform:none; }
 }
 </style>
 </head>
-
 <body>
+  <div class="wrap">
+    <h1>Safety Improvement Journey</h1>
 
-<div class="wrap">
+    <div class="timeline" id="timeline">
+      <div class="track-wrap">
+        <div class="track" id="track">
+          <div id="progress" class="progress"></div>
+        </div>
+      </div>
 
-<h1>Cognitica — Safety Improvement Journey</h1>
+      <!-- 1 -->
+      <div class="row">
+        <div class="left">
+          <div class="card"><div class="title">Getting started is simple</div><div class="desc">Begin your safety transformation quickly with minimal setup.</div></div>
+        </div>
+        <div class="center"><div class="marker" data-idx="0"></div></div>
+        <div class="right"></div>
+      </div>
 
-<div class="timeline" id="timeline">
+      <!-- 2 -->
+      <div class="row">
+        <div class="left"></div>
+        <div class="center"><div class="marker" data-idx="1"></div></div>
+        <div class="right">
+          <div class="card"><div class="title">Prepare Your Company For the Future</div><div class="desc">Adopt AI-driven safety systems that scale with your operations.</div></div>
+        </div>
+      </div>
 
-  <div class="track-wrap">
-    <div class="track">
-      <div id="progress" class="progress"></div>
-    </div>
-  </div>
+      <!-- 3 -->
+      <div class="row">
+        <div class="left">
+          <div class="card"><div class="title">Prevent Accidents Early</div><div class="desc">Stop incidents before they happen with real-time computer vision.</div></div>
+        </div>
+        <div class="center"><div class="marker" data-idx="2"></div></div>
+        <div class="right"></div>
+      </div>
 
-  <!-- Row 1 -->
-  <div class="row">
-    <div class="left">
-      <div class="card"><div class="title">Getting started is simple</div><div class="desc">Begin your safety transformation quickly with minimal setup.</div></div>
-    </div>
-    <div class="center"><div class="marker"></div></div>
-    <div class="right"></div>
-  </div>
+      <!-- 4 -->
+      <div class="row">
+        <div class="left"></div>
+        <div class="center"><div class="marker" data-idx="3"></div></div>
+        <div class="right">
+          <div class="card"><div class="title">Understand Safety Issues</div><div class="desc">Identify behavioral and operational risks with clear insights.</div></div>
+        </div>
+      </div>
 
-  <!-- Row 2 -->
-  <div class="row">
-    <div class="left"></div>
-    <div class="center"><div class="marker"></div></div>
-    <div class="right">
-      <div class="card"><div class="title">Prepare Your Company For the Future</div><div class="desc">Adopt AI-driven safety systems that scale with your operations.</div></div>
-    </div>
-  </div>
+      <!-- 5 -->
+      <div class="row">
+        <div class="left">
+          <div class="card"><div class="title">A Complete View of All Facilities</div><div class="desc">Monitor every zone from a single unified dashboard.</div></div>
+        </div>
+        <div class="center"><div class="marker" data-idx="4"></div></div>
+        <div class="right"></div>
+      </div>
 
-  <!-- Row 3 -->
-  <div class="row">
-    <div class="left">
-      <div class="card"><div class="title">Prevent Accidents Early</div><div class="desc">Stop incidents before they happen with real-time computer vision.</div></div>
-    </div>
-    <div class="center"><div class="marker"></div></div>
-    <div class="right"></div>
-  </div>
+      <!-- 6 -->
+      <div class="row">
+        <div class="left"></div>
+        <div class="center"><div class="marker" data-idx="5"></div></div>
+        <div class="right">
+          <div class="card"><div class="title">Review Near-Miss Cases</div><div class="desc">Analyze past incidents to build proactive safety strategies.</div></div>
+        </div>
+      </div>
 
-  <!-- Row 4 -->
-  <div class="row">
-    <div class="left"></div>
-    <div class="center"><div class="marker"></div></div>
-    <div class="right">
-      <div class="card"><div class="title">Understand Safety Issues</div><div class="desc">Identify behavioral and operational risks with clear insights.</div></div>
-    </div>
-  </div>
+      <!-- 7 -->
+      <div class="row">
+        <div class="left">
+          <div class="card"><div class="title">Make Your Machines Intelligent</div><div class="desc">Let your industrial machines detect humans and prevent errors instantly.</div></div>
+        </div>
+        <div class="center"><div class="marker" data-idx="6"></div></div>
+        <div class="right"></div>
+      </div>
 
-  <!-- Row 5 -->
-  <div class="row">
-    <div class="left">
-      <div class="card"><div class="title">A Complete View of All Facilities</div><div class="desc">Monitor every zone from a single unified dashboard.</div></div>
-    </div>
-    <div class="center"><div class="marker"></div></div>
-    <div class="right"></div>
-  </div>
+      <!-- 8 -->
+      <div class="row">
+        <div class="left"></div>
+        <div class="center"><div class="marker" data-idx="7"></div></div>
+        <div class="right">
+          <div class="card"><div class="title">See Your Safety Situation Clearly</div><div class="desc">Get complete, real-time visibility across your entire operation.</div></div>
+        </div>
+      </div>
 
-  <!-- Row 6 -->
-  <div class="row">
-    <div class="left"></div>
-    <div class="center"><div class="marker"></div></div>
-    <div class="right">
-      <div class="card"><div class="title">Review Near-Miss Cases</div><div class="desc">Analyze past incidents to build proactive safety strategies.</div></div>
-    </div>
-  </div>
-
-  <!-- Row 7 -->
-  <div class="row">
-    <div class="left">
-      <div class="card"><div class="title">Make Your Machines Intelligent</div><div class="desc">Let your industrial machines detect humans and prevent errors instantly.</div></div>
-    </div>
-    <div class="center"><div class="marker"></div></div>
-    <div class="right"></div>
-  </div>
-
-  <!-- Row 8 -->
-  <div class="row">
-    <div class="left"></div>
-    <div class="center"><div class="marker"></div></div>
-    <div class="right">
-      <div class="card"><div class="title">See Your Safety Situation Clearly</div><div class="desc">Get complete, real-time visibility across your entire operation.</div></div>
-    </div>
-  </div>
-
-</div>
-</div>
+    </div><!-- timeline -->
+  </div><!-- wrap -->
 
 <script>
-// Reveal cards
-const cards = document.querySelectorAll('.card');
-const observer = new IntersectionObserver(entries=>{
-  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
-},{ threshold:0.2 });
+/* Reveal cards using IntersectionObserver */
+(function(){
+  const cards = Array.from(document.querySelectorAll('.card'));
+  if('IntersectionObserver' in window){
+    const obs = new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting) e.target.classList.add('visible');
+      });
+    }, { threshold: 0.25 });
+    cards.forEach(c=>obs.observe(c));
+  } else {
+    // fallback: show all
+    cards.forEach(c=>c.classList.add('visible'));
+  }
+})();
 
-cards.forEach(c=>observer.observe(c));
+/* Progress height calculation: fill from top of track to last marker visible in viewport */
+(function(){
+  const progress = document.getElementById('progress');
+  const timeline = document.getElementById('timeline');
+  const markers = Array.from(document.querySelectorAll('.marker'));
 
-// Update track progress
-window.addEventListener("scroll", ()=>{
-  const progress = document.getElementById("progress");
-  const timeline = document.getElementById("timeline");
-  const rect = timeline.getBoundingClientRect();
-  const total = rect.height - window.innerHeight;
-  const scrolled = Math.min(Math.max(-rect.top,0), total);
-  progress.style.height = (scrolled / total * 100) + "%";
-});
-</script>
+  function updateProgress(){
+    if(!timeline || markers.length===0) return;
+    const timelineRect = timeline.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
 
-</body>
-  <script>
-// Listen to scroll updates sent from Wix parent page
-window.addEventListener("message", function (e) {
-    let data = e.data;
-    try {
-        if (typeof data === "string") data = JSON.parse(data);
-    } catch (_) {
-        return;
+    // top of track in page coordinates:
+    const trackTop = timelineRect.top + window.scrollY;
+    // bottom of track
+    const trackBottom = trackTop + timeline.scrollHeight;
+
+    // find last marker whose center is <= viewportBottom
+    const viewportBottom = window.scrollY + viewportHeight;
+    let lastIncluded = markers[0];
+    for(let i=0;i<markers.length;i++){
+      const r = markers[i].getBoundingClientRect();
+      const centerPageY = window.scrollY + r.top + (r.height/2);
+      if(centerPageY <= viewportBottom - 10) lastIncluded = markers[i];
     }
+    const firstRect = markers[0].getBoundingClientRect();
+    const firstCenterPageY = window.scrollY + firstRect.top + firstRect.height/2;
+    const lastRect = lastIncluded.getBoundingClientRect();
+    const lastCenterPageY = window.scrollY + lastRect.top + lastRect.height/2;
 
-    if (data.type !== "wixScroll") return;
+    // clamp within timeline bounds
+    const startY = Math.max(trackTop, firstCenterPageY);
+    const endY = Math.min(trackBottom, lastCenterPageY);
+    const totalDist = Math.max(1, trackBottom - trackTop);
+    const filled = Math.max(0, Math.min(1, (endY - trackTop) / totalDist));
 
-    const { scrollY, innerHeight, iframeTop } = data;
+    progress.style.height = (filled*100) + '%';
+  }
 
-    // Progress bar update based on parent scroll
-    const timeline = document.getElementById("timeline");
-    const progress = document.getElementById("progress");
+  // initialize + listeners
+  window.addEventListener('scroll', throttle(updateProgress, 12));
+  window.addEventListener('resize', throttle(updateProgress, 60));
+  window.addEventListener('load', ()=>setTimeout(updateProgress, 120));
+  setTimeout(updateProgress, 200);
 
-    const rect = timeline.getBoundingClientRect();
-    const timelineTop = iframeTop + rect.top;
-    const timelineHeight = rect.height;
-    const timelineBottom = timelineTop + timelineHeight;
-
-    const lastVisible = scrollY + innerHeight - 50;
-
-    const filled = Math.max(
-        0,
-        Math.min(
-            1,
-            (lastVisible - timelineTop) / (timelineHeight)
-        )
-    );
-
-    progress.style.height = filled * 100 + "%";
-});
+  function throttle(fn, wait){
+    let last=0;
+    return function(...args){
+      const now = Date.now();
+      if(now - last > wait){ last = now; fn.apply(this,args); }
+    };
+  }
+})();
 </script>
-
+</body>
 </html>
-
